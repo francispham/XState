@@ -1,5 +1,9 @@
-## XState Introduction
+# XState Introduction
 
 In the project directory, you can run:
 
-### `npx serve`
+## `npx serve`
+
+You can visualize your code @:
+
+## `https://xstate.js.org/viz/`
