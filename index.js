@@ -1,4 +1,4 @@
-const { createMachine } = XState;
+const { createMachine, interpret } = XState;
 
 const dragDropMachine = createMachine({
   initial: 'idle',
@@ -20,3 +20,11 @@ const dragDropMachine = createMachine({
     },
   },
 });
+
+console.log(dragDropMachine.transition('idle', 'mousedown'))
+
+const dragDropService = interpret(dragDropMachine)
+  .onTransition(state => {
+    console.log(state);
+  })
+  .start();
