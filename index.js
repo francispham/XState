@@ -1,4 +1,4 @@
-const { createMachine, interpret } = XState;
+const { createMachine, interpret, assign } = XState;
 
 const dragDropMachine = createMachine({
   initial: 'idle',
@@ -13,14 +13,32 @@ const dragDropMachine = createMachine({
       on: {
         // Event: NextState
         mousedown: {
-          target: 'dragging'
+          target: 'dragging',
+          // Side Effect somewhere here
+          actions: assign((context, mouseEvent) => {
+            // Mutating context works but not recommended!
+            // context.x = mouseEvent.clientX
+            // Best way is Immutable (return a new context):
+            return {
+              ...context,
+              x: mouseEvent.clientX,
+              y: mouseEvent.clientY,
+            }
+          })
         }
       }
     },
     dragging: {
       on: {
         mouseup: {
-          target: 'idle'
+          target: 'idle',
+          actions: assign((context, mouseEvent) => {
+            return {
+              ...context,
+              x: mouseEvent.clientX,
+              y: mouseEvent.clientY,
+            }
+          })
         }
       }
     },
@@ -31,7 +49,7 @@ const body = document.body;
 
 const dragDropService = interpret(dragDropMachine)
   .onTransition(state => {
-    console.log(state.value);
+    console.log(state.context);
     // Show Data Attributes on Browser
     body.dataset.state = state.toStrings().join(' ')
   })
@@ -39,11 +57,10 @@ const dragDropService = interpret(dragDropMachine)
 
 const box = document.getElementById('box')
 body.addEventListener('mousedown', event => {
-  // service.send(event)
   // event.clientX
   // event.clientY
-  dragDropService.send('mousedown')
+  dragDropService.send(event);
 })
 body.addEventListener('mouseup', event => {
-  dragDropService.send('mouseup')
+  dragDropService.send(event);
 })
