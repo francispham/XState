@@ -21,9 +21,13 @@ const dragDropMachine = createMachine({
   },
 });
 
+const body = document.body;
+
 const dragDropService = interpret(dragDropMachine)
   .onTransition(state => {
-    console.log(state);
+    console.log(state.value);
+    // Show Data Attributes on Browser
+    body.dataset.state = state.toStrings().join(' ')
   })
   .start();
 
