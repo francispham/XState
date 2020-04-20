@@ -46,16 +46,20 @@ const dragDropMachine = createMachine({
 });
 
 const body = document.body;
+const box = document.getElementById('box')
 
 const dragDropService = interpret(dragDropMachine)
   .onTransition(state => {
     console.log(state.context);
+    // Moving the Box:
+    box.style.setProperty('left', state.context.x + 'px')
+    box.style.setProperty('top', state.context.y + 'px')
+
     // Show Data Attributes on Browser
     body.dataset.state = state.toStrings().join(' ')
   })
   .start();
 
-const box = document.getElementById('box')
 body.addEventListener('mousedown', event => {
   // event.clientX
   // event.clientY
