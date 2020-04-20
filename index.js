@@ -21,10 +21,17 @@ const dragDropMachine = createMachine({
   },
 });
 
-console.log(dragDropMachine.transition('idle', 'mousedown'))
-
 const dragDropService = interpret(dragDropMachine)
   .onTransition(state => {
     console.log(state);
   })
   .start();
+
+const box = document.getElementById('box')
+box.addEventListener('mousedown', event => {
+  // service.send(event)
+  dragDropService.send('mousedown')
+})
+box.addEventListener('mouseup', event => {
+  dragDropService.send('mouseup')
+})
