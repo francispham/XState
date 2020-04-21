@@ -13,7 +13,7 @@ html {
 }
 
 body::before {
-    content: attr(data-state);
+    content: attr(data-state); 
     font-size: 2rem;
     font-family: monospace;
     position: absolute;
@@ -22,6 +22,9 @@ body::before {
     right: 0;
 }
 
+/* 
+Custom Attribute from 'body.dataset.state = "dragging":
+<body data-state="dragging" > */
 body[data-state="dragging"] #box {
     background: red;
 }

@@ -3,8 +3,13 @@ const { createMachine, interpret, assign } = XState;
 const dragDropMachine = createMachine({
   initial: 'idle',
   context: {
+    // The Position of the Box:
     x: 0,
     y: 0,
+    // Where you Clicked:
+    pointerX: 0,
+    pointerY: 0,
+    // How Far From Where you Clicked
     dx: 0, // How Far on the X Axis 
     dy: 0, // How Far on the Y Axis 
   },
@@ -21,8 +26,8 @@ const dragDropMachine = createMachine({
             // Best way is Immutable (return a new context):
             return {
               ...context,
-              x: mouseEvent.clientX,
-              y: mouseEvent.clientY,
+              pointerX: mouseEvent.clientX,
+              pointerY: mouseEvent.clientY,
             }
           })
         }
@@ -35,13 +40,23 @@ const dragDropMachine = createMachine({
           actions: assign((context, mouseEvent) => {
             return {
               ...context,
-              dx: mouseEvent.clientX - context.x,
-              dy: mouseEvent.clientY - context.y,
+              dx: mouseEvent.clientX - context.pointerX,
+              dy: mouseEvent.clientY - context.pointerY,
             }
           })
         },
         mouseup: {
           target: 'idle',
+          // Change context.x & context.y:
+          actions: assign((context) => {
+            return {
+              ...context,
+              x: context.x + context.dx,
+              y: context.y + context.dy,
+              dx: 0,
+              dy: 0,
+            }
+          })
         }
       }
     },
@@ -49,19 +64,27 @@ const dragDropMachine = createMachine({
 });
 
 const body = document.body;
-const box = document.getElementById('box')
+const box = document.getElementById('box');
 
 const dragDropService = interpret(dragDropMachine)
   .onTransition(state => {
     if (state.changed) {
       console.log(state.context);
-      // Moving the Box:
-      box.style.setProperty('left', state.context.dx + 'px')
-      box.style.setProperty('top', state.context.dy + 'px')
-    }
 
-    // Show Data Attributes on Browser
-    body.dataset.state = state.toStrings().join(' ')
+      // Moving the Box:
+      box.style.setProperty(
+        'left', 
+        // Where the Box is + How Far the Box Moved:
+        state.context.x + state.context.dx + 'px',
+      );
+      box.style.setProperty(
+        'top', 
+        state.context.y + state.context.dy + 'px',
+      );
+      
+      // Show Data Attributes on Browser
+      body.dataset.state = state.toStrings().join(' ')
+    }
   })
   .start();
 
