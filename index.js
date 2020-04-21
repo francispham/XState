@@ -30,15 +30,18 @@ const dragDropMachine = createMachine({
     },
     dragging: {
       on: {
-        mouseup: {
-          target: 'idle',
+        mousemove: {
+          target: 'dragging',
           actions: assign((context, mouseEvent) => {
             return {
               ...context,
-              x: mouseEvent.clientX,
-              y: mouseEvent.clientY,
+              dx: mouseEvent.clientX - context.x,
+              dy: mouseEvent.clientY - context.y,
             }
           })
+        },
+        mouseup: {
+          target: 'idle',
         }
       }
     },
@@ -50,10 +53,12 @@ const box = document.getElementById('box')
 
 const dragDropService = interpret(dragDropMachine)
   .onTransition(state => {
-    console.log(state.context);
-    // Moving the Box:
-    box.style.setProperty('left', state.context.x + 'px')
-    box.style.setProperty('top', state.context.y + 'px')
+    if (state.changed) {
+      console.log(state.context);
+      // Moving the Box:
+      box.style.setProperty('left', state.context.dx + 'px')
+      box.style.setProperty('top', state.context.dy + 'px')
+    }
 
     // Show Data Attributes on Browser
     body.dataset.state = state.toStrings().join(' ')
@@ -66,5 +71,8 @@ body.addEventListener('mousedown', event => {
   dragDropService.send(event);
 })
 body.addEventListener('mouseup', event => {
+  dragDropService.send(event);
+})
+body.addEventListener('mousemove', event => {
   dragDropService.send(event);
 })
