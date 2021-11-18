@@ -1,34 +1,40 @@
+
 const { Machine } = XState;
 
-const lit = {
-  on: {
-    BREAK: 'broken',
-    TOGGLE: 'unlit'
-  }
-};
-
-const unlit = {
-  on: {
-    BREAK: 'broken',
-    TOGGLE: 'lit'
-  }
-};
-
-const broken = {
-  type: 'final'
-};
-
-const states = { lit, unlit, broken }
-
-const initial = 'unlit'
-
-const config = {
+const lightBulbMachine = Machine({
   id: 'lightBulb',
-  initial,
-  states
-}
-
-const lightBulbMachine = Machine(config);
+  initial: 'unlit',
+  states: {
+    lit: {
+      on: {
+        BREAK: 'broken',
+        TOGGLE: 'unlit'
+      }
+    },
+    unlit: {
+      on: {
+        BREAK: 'broken',
+        TOGGLE: 'lit'
+      }
+    },
+    broken: {
+      type: 'final'
+    }
+  }
+});
 
 //* Doc: https://xstate.js.org/docs/guides/transitions.html#machine-transition-method
 console.log(lightBulbMachine.transition('unlit', 'TOGGLE').value);
+
+//? Tutorial: https://egghead.io/lessons/xstate-use-an-interpreter-to-instantiate-a-machine 
+//* Doc: https://xstate.js.org/docs/guides/interpretation.html#interpreter
+const service = XState.interpret(lightBulbMachine).start();
+
+//* Doc: https://xstate.js.org/docs/guides/interpretation.html#transitions
+service.onTransition(state => {
+  if (state.changed) console.log(state.value);
+});
+
+service.send('TOGGLE');
+service.send('TOGGLE');
+service.send('BREAK');
