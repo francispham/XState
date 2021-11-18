@@ -1,16 +1,27 @@
+const STATES = {
+  lit: 'lit',
+  unlit: 'unlit',
+  broken: 'broken'
+}
 function lightBulb() {
-  let isLit = false
-  let isBroken = false
+  let state = STATES.unlit;
 
   return {
     state() {
-      return { isLit, isBroken }
+      return state;
     },
     toggle() {
-      isLit = !isLit
+      switch (state) {
+        case STATES.lit:
+          state = STATES.unlit;
+          break;
+        case STATES.unlit:
+          state = STATES.lit;
+          break;
+      }
     },
     break() {
-      isBroken = true
+      state = STATES.broken;
     }
   }
 }
