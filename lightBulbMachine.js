@@ -1,5 +1,6 @@
-
-const { Machine } = XState;
+//* Docs: https://paka.dev/npm/xstate/v/4.26.0#module-index-export-Machine
+//* Docs: https://paka.dev/npm/xstate/v/4.26.0#module-index-export-interpret 
+const { Machine, interpret } = XState;
 
 const lightBulbMachine = Machine({
   id: 'lightBulb',
@@ -28,7 +29,7 @@ console.log(lightBulbMachine.transition('unlit', 'TOGGLE').value);
 
 //? Tutorial: https://egghead.io/lessons/xstate-use-an-interpreter-to-instantiate-a-machine 
 //* Doc: https://xstate.js.org/docs/guides/interpretation.html#interpreter
-const service = XState.interpret(lightBulbMachine).start();
+const service = interpret(lightBulbMachine).start();
 
 //* Doc: https://xstate.js.org/docs/guides/interpretation.html#transitions
 service.onTransition(state => {
